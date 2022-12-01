@@ -19,18 +19,18 @@ class Enemy {
 
 
     draw(frameCounter) {
-
+        console.log(this.img.frameIndex);
         this.ctx.drawImage(this.img, this.x, this.y, this.w, this.h)
 
         this.animateImg(frameCounter)  
     }
 
     animateImg(frameCounter) {
-        if (frameCounter % 6 === 0) {
+        if (frameCounter % 13 === 0) {
             this.img.src = `./img/andar/${++this.img.frameIndex}.png`
 
-            if (this.img.frameIndex === 12)
-                this.img.frameIndex = 0
+            if (this.img.frameIndex === 13)
+                this.img.frameIndex = 1 
         }
     }
 

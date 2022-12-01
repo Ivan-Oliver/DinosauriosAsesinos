@@ -3,6 +3,12 @@ const Game = {
     ctx: undefined,
     scoreBoard: undefined,
     fps: 60, 
+    randomInt: function (min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1) + min);
+      },
+    
     keys: {
         TOP_KEY: 87,
         SPACE: 32
@@ -16,6 +22,9 @@ const Game = {
         this.canvas.height = window.innerHeight
 
         this.start()
+
+        this.audio = new Audio('musica/ace.mp3')
+        this.audio.play()
     },
 
     start: function() {
@@ -30,15 +39,23 @@ const Game = {
             this.frameCounter++;
 
             // Generar obstaculo cada 50 frames
-            if(this.frameCounter % 50 === 0)
+            if(this.frameCounter % this.randomInt(50, 200) === 0)
                 this.generateObstacle()
 
             if(this.frameCounter % 80 === 0)
                 this.generateEnemy()
     
-            // if(this.isCollision()) 
-            //     this.gameOver()
+              if(this.isCollision()) 
+                  this.gameOver()
+
+              if(this.isCollision2())
+                 this.gameOver()
+
+             this.isImpact()
+        
             
+
+
             this.drawAll()
             this.moveAll()
 
@@ -55,6 +72,7 @@ const Game = {
         this.score = 0
         this.obstacles = []
         this.enemies = []
+        
     },
 
     clear: function () {
@@ -104,13 +122,47 @@ const Game = {
     isCollision() {
         return this.obstacles.some((obstacle) => {
             return (
-                this.player.x + this.player.w >= obstacle.x &&
-                this.player.x <= obstacle.x + obstacle.w &&
-                this.player.y + this.player.h - 20 >= obstacle.y &&
+                this.player.x + this.player.w -50 >=  obstacle.x &&
+                this.player.x +50 <= obstacle.x + obstacle.w &&
+                this.player.y + this.player.h - 50 >= obstacle.y &&
                 this.player.y <= obstacle.y + obstacle.h
             )
         })
     },
+
+    isCollision2() {
+        return this.enemies.some((enemies) => {
+            return (
+                this.player.x + this.player.w -70 >=  enemies.x &&
+                this.player.x +70 <= enemies.x + enemies.w &&
+                this.player.y + this.player.h -70 >= enemies.y &&
+                this.player.y <= enemies.y + enemies.h
+            )
+        })
+    },
+
+    isImpact() {
+        return this.enemies.some((enemy) => {
+            return  this.player.bullets.some((bullet) => {     
+                const result = (
+                bullet.x + bullet.w -10 >=  enemy.x &&
+                bullet.x <= enemy.x + enemy.w &&
+                bullet.y + bullet.h -10 >= enemy.y &&
+                bullet.y <= enemy.y + enemy.h)
+
+                if (result) {
+                    this.player.bullets = this.player.bullets.filter((b) => b != bullet )
+                    this.enemies = this.enemies.filter((e) => e != enemy)
+
+                }
+
+                return result
+        })
+ 
+        })
+
+    },
+
 
     stop() {
         clearInterval(this.interval)
@@ -119,7 +171,7 @@ const Game = {
     gameOver() {
         this.stop()
 
-        if(confirm("Te has chocado amigo, (quiéres jugar de nuevo?"))
+        if(confirm("JAJA Pringao, COME PINGAS"))
             this.start()
     },
 
@@ -128,7 +180,6 @@ const Game = {
     }
 }
 
-// 1. (DIFICULTAD FACIL) Buscar imagen para poner en lugar de los rectangulos de los obtaculos. La imagen se pinta igual que hemos hecho con las balas. 
 // 2. (DIFICULTAD FACIL) CREAR COLISIÓN PERSONAJE-DINOSAURIO
 
 // 3. (DIFICULTAD MEDIA) (DESCOMENTAR LAs COLISIONE). ENTENDER EL CODIGO DE LA COLISION PARA AJUSTAR AMBAS COLISIONES. PERSONAJE-OBSTACULO PERSONAJE-DINOSAURIO. (CLASSROOM HAY VIDEOS de como lo hice) 
